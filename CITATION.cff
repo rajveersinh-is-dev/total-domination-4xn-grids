@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Total Domination Number of 4 x n Grid Graphs"
+authors:
+  - family-names: "Pardeshi"
+    given-names: "Rajveersinh Vishal"
+version: 1.0.0
+date-released: 2026-10-17
+license: MIT

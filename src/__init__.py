@@ -1,0 +1,1 @@
+"""Research code for total domination numbers of 4 x n grid graphs."""

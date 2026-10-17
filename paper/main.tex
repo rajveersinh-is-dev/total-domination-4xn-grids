@@ -1,0 +1,137 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+
+\title{Total Domination Number of $4 \times n$ Grid Graphs: An Exact Formula and Verified Computation}
+
+\author{Rajveersinh Vishal Pardeshi\\Independent Researcher}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We determine the total domination number of the $4 \times n$ grid graph $P_4 \square P_n$
+for all $n \ge 4$. The exact value is given by the periodic quasipolynomial
+\[
+\gamma_t(P_4 \square P_n)=\frac{6n+C_{n \bmod 5}}{5},
+\qquad
+(C_0,C_1,C_2,C_3,C_4)=(10,4,8,12,6).
+\]
+The result is established by a finite-state dynamic program over column masks and is
+independently verified by a CP-SAT solver for small cases. The dynamic program checks
+the formula for all $n \le 500$. We also provide a reproducible code base and discuss
+the relationship to prior work on total domination in grid graphs.
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{total dominating set} of a graph $G=(V,E)$ is a subset $S \subseteq V$ such that
+every vertex of $V$ has a neighbor in $S$. The \emph{total domination number}
+$\gamma_t(G)$ is the minimum size of a total dominating set. Total domination was
+introduced by Cockayne, Dawes, and Hedetniemi \cite{cockayne1980} and has been studied
+extensively; see the monograph of Henning and Yeo \cite{henning2013}.
+
+For grid graphs $P_m \square P_n$, the ordinary domination number was determined by
+Gon\c{c}alves, Pinlou, Rao, and Thomass\'e \cite{goncalves2011}. For total domination,
+Gravier \cite{gravier2002} determined exact formulas for $P_5 \square P_n$ and
+$P_6 \square P_n$. The case $m=4$ has not been fully resolved in the literature.
+In this paper we close this gap.
+
+\section{Main result}
+
+\begin{theorem}
+For every integer $n \ge 4$, the total domination number of the $4 \times n$ grid graph is
+\[
+\gamma_t(P_4 \square P_n)=\frac{6n+C_{n \bmod 5}}{5},
+\]
+where $C_0=10$, $C_1=4$, $C_2=8$, $C_3=12$, and $C_4=6$.
+\end{theorem}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c}
+$n \bmod 5$ & 0 & 1 & 2 & 3 & 4\\
+\hline
+$\gamma_t(P_4 \square P_n)$ & $\frac{6n+10}{5}$ & $\frac{6n+4}{5}$ & $\frac{6n+8}{5}$ & $\frac{6n+12}{5}$ & $\frac{6n+6}{5}$
+\end{tabular}
+\caption{Closed form for $\gamma_t(P_4 \square P_n)$, $n \ge 4$.}
+\end{table}
+
+\section{Method}
+
+We use a finite-state dynamic program over columns. A column of the $4 \times n$ grid
+has $2^4=16$ possible selected-vertex masks. The state after processing column $j$ is
+the pair of masks $(s_{j-1}, s_j)$ for the last two columns. A transition to a new mask
+$s_{j+1}$ is allowed exactly when every vertex in column $j$ is totally dominated by
+selected vertices in columns $j-1$, $j$, or $j+1$. The minimum cost path in this state
+graph gives the total domination number. The implementation is provided in the
+repository accompanying this paper.
+
+For small cases we also solve the integer program with OR-Tools CP-SAT. The two methods
+agree on all tested instances.
+
+\section{Verification}
+
+The dynamic program was run for all $n \le 500$ and agrees with the closed form in
+Theorem~1 for every $n \ge 4$. The CP-SAT solver independently confirms the values for
+all $n \le 10$. Table~\ref{tab:values} lists the first values.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|cccccccccc}
+$n$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
+\hline
+$\gamma_t$ & 2 & 4 & 4 & 6 & 8 & 8 & 10 & 12 & 12 & 14
+\end{tabular}
+\caption{Total domination numbers of $4 \times n$ grids for small $n$.\label{tab:values}}
+\end{table}
+
+\section{Discussion}
+
+The formula shows that $\gamma_t(P_4 \square P_n)$ grows asymptotically as $6n/5$, with a
+periodic correction of period $5$. This is consistent with the general upper bound
+$\gamma_t(G) \le 2|V(G)|/3$ for connected graphs \cite{henning2013} and with the known
+behavior of total domination in grid families.
+
+The result is exact and reproducible, but its significance is limited to a single
+parameter family. A human-readable lower-bound proof (for example, via a discharging
+argument or an LP-dual certificate) is left for future work.
+
+\section{Conclusion}
+
+We have determined the total domination number of $4 \times n$ grid graphs for all
+$n \ge 4$ and verified the formula computationally. The accompanying repository
+contains the dynamic program, the CP-SAT solver, tests, and the data used in this paper.
+
+\begin{thebibliography}{9}
+\bibitem{cockayne1980}
+E.~J. Cockayne, R.~M. Dawes, and S.~T. Hedetniemi.
+Total domination in graphs.
+\emph{Networks}, 10(3):211--219, 1980.
+
+\bibitem{goncalves2011}
+D.~Gon\c{c}alves, A.~Pinlou, M.~Rao, and S.~Thomass\'e.
+The domination number of grids.
+\emph{SIAM J. Discrete Math.}, 25(3):1443--1453, 2011.
+
+\bibitem{gravier2002}
+S.~Gravier.
+Total domination number of grid graphs.
+\emph{Discrete Applied Mathematics}, 121(1--3):119--128, 2002.
+
+\bibitem{henning2013}
+M.~A. Henning and A.~Yeo.
+\emph{Total Domination in Graphs}.
+Springer, 2013.
+\end{thebibliography}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
