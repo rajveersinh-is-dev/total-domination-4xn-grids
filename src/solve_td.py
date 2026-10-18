@@ -1,5 +1,6 @@
 """CP-SAT based exact solver for total domination numbers of grid graphs."""
 
+
 from ortools.sat.python import cp_model
 
 
