@@ -10,41 +10,55 @@ from typing import Optional
 
 def vertical_neighbors(mask: int, m: int) -> int:
     """Return a mask of rows in a column that have a selected vertical neighbour."""
-    res = 0
-    for r in range(m):
-        if (r > 0 and (mask >> (r - 1)) & 1) or (r < m - 1 and (mask >> (r + 1)) & 1):
-            res |= 1 << r
-    return res
+    return ((mask << 1) & ((1 << m) - 1)) | (mask >> 1)
+
+
+_dp_states_cache = {}
 
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
     """Minimum size of a total dominating set of P_m x P_n via column DP."""
+    if n <= 0:
+        return None
+
     M = 1 << m
     full = M - 1
     INF = 10 ** 9
 
-    # dp[(prev_mask, cur_mask)] = minimum cost after placing current column.
-    dp = {}
-    for s in range(M):
-        dp[(0, s)] = bin(s).count("1")
+    if m not in _dp_states_cache:
+        bc = [bin(q).count("1") for q in range(M)]
+        dp = {}
+        for s in range(M):
+            dp[(0, s)] = bc[s]
+        _dp_states_cache[m] = [dp]
 
-    for _ in range(1, n):
-        newdp = {}
-        for (p, c), cost in dp.items():
-            d_cur = vertical_neighbors(c, m) | p
-            for q in range(M):
-                if (d_cur | q) == full:
-                    ncost = cost + bin(q).count("1")
-                    key = (c, q)
-                    if key not in newdp or ncost < newdp[key]:
-                        newdp[key] = ncost
-        dp = newdp
-        if not dp:
-            return None
+    states = _dp_states_cache[m]
+
+    if len(states) < n:
+        bc = [bin(q).count("1") for q in range(M)]
+        vn = [vertical_neighbors(c, m) for c in range(M)]
+
+        for _ in range(len(states), n):
+            dp = states[-1]
+            newdp = {}
+            for (p, c), cost in dp.items():
+                d_cur = vn[c] | p
+                for q in range(M):
+                    if (d_cur | q) == full:
+                        ncost = cost + bc[q]
+                        key = (c, q)
+                        if key not in newdp or ncost < newdp[key]:
+                            newdp[key] = ncost
+            states.append(newdp)
+
+    dp = states[n - 1]
+    if not dp:
+        return None
 
     best = INF
+    vn = [vertical_neighbors(c, m) for c in range(M)]
     for (p, c), cost in dp.items():
-        d_last = vertical_neighbors(c, m) | p
+        d_last = vn[c] | p
         if d_last == full and cost < best:
             best = cost
     return None if best == INF else best

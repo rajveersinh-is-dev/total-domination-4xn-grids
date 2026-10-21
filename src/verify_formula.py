@@ -18,4 +18,3 @@ if __name__ == "__main__":
     bad = verify_4xn(500)
     print("discrepancies:", bad)
     print("OK" if not bad else "FAILED")
-PYEOF
