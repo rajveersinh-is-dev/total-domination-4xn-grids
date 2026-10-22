@@ -16,5 +16,11 @@ def test_formula_matches_dp():
     assert not bad, bad[:10]
 
 
-def test_cpsat_matches_dp_4x6():
-    assert total_domination_cpsat(4, 6) == total_domination_dp(4, 6) == 8
+def test_cpsat_matches_dp():
+    for n in range(1, 16):
+        assert total_domination_cpsat(4, n) == total_domination_dp(4, n)
+
+
+def test_infeasible_grid():
+    assert total_domination_cpsat(1, 1) is None
+    assert total_domination_dp(1, 1) is None
