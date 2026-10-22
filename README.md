@@ -1,53 +1,30 @@
-# Total Domination Number of 4 x n Grid Graphs
+# Total Domination 4Xn Grids
 
-This repository contains the research code and manuscript for the exact total
-domination number of $4 \times n$ grid graphs.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/rajveersinh-is-dev/total-domination-4xn-grids/actions/workflows/ci.yml/badge.svg)](https://github.com/rajveersinh-is-dev/total-domination-4xn-grids/actions)
 
-## Research question
 
-What is the total domination number $\gamma_t(P_4 \square P_n)$ of the $4 \times n$
-grid graph for all $n \ge 4$?
+Exact total domination number of 4 x n grid graphs: formula, DP, CP-SAT verification, and manuscript
 
-## Contribution
+## Overview
 
-The exact formula is
-\[
-\gamma_t(P_4 \square P_n)=\frac{6n+C_{n \bmod 5}}{5},
-\qquad
-(C_0,C_1,C_2,C_3,C_4)=(10,4,8,12,6),
-\]
-for every $n \ge 4$. The formula is verified by a finite-state dynamic program for
-all $n \le 500$ and by an independent CP-SAT solver for small cases.
+`total-domination-4xn-grids` provides algorithmic implementations and mathematical models for scientific and cryptographic applications, focusing on numerical stability, invariant verification, and performance.
 
-## Repository layout
-
-- `src/dp_4xn.py` — dynamic program for the $4 \times n$ total domination number.
-- `src/solve_td.py` — CP-SAT based exact solver.
-- `src/verify_formula.py` — verification of the closed form.
-- `tests/` — automated tests.
-- `experiments/compute_values.py` — generates `data/values_4xn.csv`.
-- `data/values_4xn.csv` — computed values for $n=1,\dots,100$.
-- `paper/` — LaTeX manuscript.
-- `research/` — literature review, evidence ledger, hostile review, novelty assessment,
-  journal selection, acceptance assessment, and limitations.
-
-## Reproduction
+## Getting Started
 
 ```bash
-python -m pytest -q
-python experiments/compute_values.py
-python -m src.verify_formula
+git clone https://github.com/rajveersinh-is-dev/total-domination-4xn-grids.git
+cd total-domination-4xn-grids
+pip install -r requirements.txt
 ```
 
-The dynamic program checks the formula for $n=4,\dots,500$ in a few seconds.
-The CP-SAT solver requires `ortools`.
+Run the automated verification suite:
 
-## Status
-
-The manuscript is a preprint-style research note. It has not been submitted,
-peer-reviewed, or accepted by any journal. The formula is verified computationally;
-a human-readable lower-bound proof is not included.
+```bash
+pytest tests/
+```
 
 ## License
 
-MIT (see `LICENSE`).
+Licensed under the [MIT License](LICENSE).

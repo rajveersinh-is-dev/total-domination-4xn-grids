@@ -1,5 +1,6 @@
 """Verification helpers for the 4 x n total domination formula."""
 
+
 from src.dp_4xn import total_domination_dp, formula_4xn
 
 
