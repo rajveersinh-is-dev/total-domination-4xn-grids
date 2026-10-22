@@ -14,7 +14,13 @@ def verify_4xn(limit: int = 500) -> list[tuple[int, int, int]]:
     return discrepancies
 
 
+import sys
+
 if __name__ == "__main__":
     bad = verify_4xn(500)
     print("discrepancies:", bad)
-    print("OK" if not bad else "FAILED")
+    if bad:
+        print("FAILED")
+        sys.exit(1)
+    else:
+        print("OK")
