@@ -13,7 +13,7 @@ def vertical_neighbors(mask: int, m: int) -> int:
     return ((mask << 1) & ((1 << m) - 1)) | (mask >> 1)
 
 
-_dp_states_cache = {}
+_dp_states_cache: dict[int, list[dict[tuple[int, int], int]]] = {}
 
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
@@ -23,7 +23,7 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
 
     M = 1 << m
     full = M - 1
-    INF = 10 ** 9
+    INF = 10**9
 
     if m not in _dp_states_cache:
         bc = [bin(q).count("1") for q in range(M)]
@@ -38,13 +38,21 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
         bc = [bin(q).count("1") for q in range(M)]
         vn = [vertical_neighbors(c, m) for c in range(M)]
 
+        transitions = {}
+        for p in range(M):
+            for c in range(M):
+                d_cur = vn[c] | p
+                valid_qs = [q for q in range(M) if (d_cur | q) == full]
+                if valid_qs:
+                    transitions[(p, c)] = valid_qs
+
         for _ in range(len(states), n):
             dp = states[-1]
-            newdp = {}
+            newdp: dict[tuple[int, int], int] = {}
             for (p, c), cost in dp.items():
-                d_cur = vn[c] | p
-                for q in range(M):
-                    if (d_cur | q) == full:
+                qs = transitions.get((p, c))
+                if qs is not None:
+                    for q in qs:
                         ncost = cost + bc[q]
                         key = (c, q)
                         if key not in newdp or ncost < newdp[key]:

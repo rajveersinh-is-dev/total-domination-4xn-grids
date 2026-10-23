@@ -1,5 +1,6 @@
 """Verification helpers for the 4 x n total domination formula."""
 
+import sys
 from src.dp_4xn import total_domination_dp, formula_4xn
 
 
@@ -8,13 +9,12 @@ def verify_4xn(limit: int = 500) -> list[tuple[int, int, int]]:
     discrepancies = []
     for n in range(4, limit + 1):
         value = total_domination_dp(4, n)
+        assert value is not None
         expected = formula_4xn(n)
         if value != expected:
             discrepancies.append((n, value, expected))
     return discrepancies
 
-
-import sys
 
 if __name__ == "__main__":
     bad = verify_4xn(500)
