@@ -24,3 +24,21 @@ def test_cpsat_matches_dp():
 def test_infeasible_grid():
     assert total_domination_cpsat(1, 1) is None
     assert total_domination_dp(1, 1) is None
+
+
+def test_solve_td_timeout():
+    import pytest
+
+    with pytest.raises(RuntimeError):
+        total_domination_cpsat(10, 10, time_limit=0.001)
+
+
+def test_dp_0_n():
+    assert total_domination_dp(4, 0) is None
+    assert total_domination_dp(4, -1) is None
+
+
+def test_dp_infeasible():
+    # Test dp when no feasible configuration exists.
+    # For a grid of size 1x1, there are no neighbors, so total domination is impossible.
+    assert total_domination_dp(1, 1) is None

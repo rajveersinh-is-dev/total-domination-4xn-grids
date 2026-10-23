@@ -12,3 +12,4 @@ venv/
 *.out
 *.synctex.gz
 scratchpad/
+.coverage
