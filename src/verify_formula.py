@@ -16,7 +16,7 @@ def verify_4xn(limit: int = 500) -> list[tuple[int, int, int]]:
     return discrepancies
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     bad = verify_4xn(500)
     print("discrepancies:", bad)
     if bad:

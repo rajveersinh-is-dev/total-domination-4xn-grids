@@ -33,6 +33,48 @@ def test_solve_td_timeout():
         total_domination_cpsat(10, 10, time_limit=0.001)
 
 
+def test_solve_td_unknown(monkeypatch):
+    import pytest
+    from ortools.sat.python import cp_model
+
+    class MockSolver:
+        def __init__(self):
+            class DummyParameters:
+                max_time_in_seconds = 300.0
+                num_search_workers = 1
+
+            self.parameters = DummyParameters()
+
+        def Solve(self, model):
+            return cp_model.UNKNOWN
+
+    monkeypatch.setattr("src.solve_td.cp_model.CpSolver", MockSolver)
+
+    with pytest.raises(RuntimeError, match="CP-SAT timeout or unknown"):
+        total_domination_cpsat(2, 2)
+
+
+def test_solve_td_model_invalid(monkeypatch):
+    import pytest
+    from ortools.sat.python import cp_model
+
+    class MockSolver:
+        def __init__(self):
+            class DummyParameters:
+                max_time_in_seconds = 300.0
+                num_search_workers = 1
+
+            self.parameters = DummyParameters()
+
+        def Solve(self, model):
+            return cp_model.MODEL_INVALID
+
+    monkeypatch.setattr("src.solve_td.cp_model.CpSolver", MockSolver)
+
+    with pytest.raises(RuntimeError, match="CP-SAT failed"):
+        total_domination_cpsat(2, 2)
+
+
 def test_dp_0_n():
     assert total_domination_dp(4, 0) is None
     assert total_domination_dp(4, -1) is None

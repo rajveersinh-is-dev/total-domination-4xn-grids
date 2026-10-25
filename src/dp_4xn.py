@@ -14,6 +14,7 @@ def vertical_neighbors(mask: int, m: int) -> int:
 
 
 _dp_states_cache: dict[int, list[dict[tuple[int, int], int]]] = {}
+_dp_transitions_cache: dict[int, dict[tuple[int, int], list[int]]] = {}
 
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
@@ -32,12 +33,7 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
             dp[(0, s)] = bc[s]
         _dp_states_cache[m] = [dp]
 
-    states = _dp_states_cache[m]
-
-    if len(states) < n:
-        bc = [bin(q).count("1") for q in range(M)]
         vn = [vertical_neighbors(c, m) for c in range(M)]
-
         transitions = {}
         for p in range(M):
             for c in range(M):
@@ -45,7 +41,13 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
                 valid_qs = [q for q in range(M) if (d_cur | q) == full]
                 if valid_qs:
                     transitions[(p, c)] = valid_qs
+        _dp_transitions_cache[m] = transitions
 
+    states = _dp_states_cache[m]
+    transitions = _dp_transitions_cache[m]
+
+    if len(states) < n:
+        bc = [bin(q).count("1") for q in range(M)]
         for _ in range(len(states), n):
             dp = states[-1]
             newdp: dict[tuple[int, int], int] = {}
@@ -60,8 +62,6 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
             states.append(newdp)
 
     dp = states[n - 1]
-    if not dp:
-        return None
 
     best = INF
     vn = [vertical_neighbors(c, m) for c in range(M)]
@@ -78,7 +78,7 @@ def formula_4xn(n: int) -> int:
     return (6 * n + constants[n % 5]) // 5
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     bad = []
     for n in range(4, 501):
         value = total_domination_dp(4, n)
