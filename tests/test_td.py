@@ -76,8 +76,10 @@ def test_solve_td_model_invalid(monkeypatch):
 
 
 def test_dp_0_n():
-    assert total_domination_dp(4, 0) is None
-    assert total_domination_dp(4, -1) is None
+    assert total_domination_dp(4, 0) == 0
+    assert total_domination_dp(4, -1) == 0
+    assert total_domination_dp(0, 4) == 0
+    assert total_domination_dp(-1, 4) == 0
 
 
 def test_dp_infeasible():
