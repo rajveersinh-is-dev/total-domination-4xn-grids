@@ -19,8 +19,8 @@ _dp_transitions_cache: dict[int, dict[tuple[int, int], list[int]]] = {}
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
     """Minimum size of a total dominating set of P_m x P_n via column DP."""
-    if n <= 0:
-        return None
+    if m <= 0 or n <= 0:
+        return 0
 
     M = 1 << m
     full = M - 1

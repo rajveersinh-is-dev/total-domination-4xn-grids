@@ -11,6 +11,9 @@ from typing import Optional
 
 def total_domination_cpsat(m: int, n: int, time_limit: float = 300.0) -> Optional[int]:
     """Return the total domination number of P_m x P_n using CP-SAT."""
+    if m <= 0 or n <= 0:
+        return 0
+
     model = cp_model.CpModel()
     x = {}
     for v in range(m * n):
@@ -24,7 +27,7 @@ def total_domination_cpsat(m: int, n: int, time_limit: float = 300.0) -> Optiona
                 ni, nj = i + di, j + dj
                 if 0 <= ni < m and 0 <= nj < n:
                     nbrs.append(ni * n + nj)
-            model.Add(sum(x[u] for u in nbrs) >= 1)
+            model.AddBoolOr([x[u] for u in nbrs])
 
     model.Minimize(sum(x[v] for v in range(m * n)))
     solver = cp_model.CpSolver()
