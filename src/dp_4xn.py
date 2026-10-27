@@ -27,7 +27,7 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
     INF = 10**9
 
     if m not in _dp_states_cache:
-        bc = [bin(q).count("1") for q in range(M)]
+        bc = [q.bit_count() for q in range(M)]
         dp = {}
         for s in range(M):
             dp[(0, s)] = bc[s]
@@ -47,7 +47,7 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
     transitions = _dp_transitions_cache[m]
 
     if len(states) < n:
-        bc = [bin(q).count("1") for q in range(M)]
+        bc = [q.bit_count() for q in range(M)]
         for _ in range(len(states), n):
             dp = states[-1]
             newdp: dict[tuple[int, int], int] = {}

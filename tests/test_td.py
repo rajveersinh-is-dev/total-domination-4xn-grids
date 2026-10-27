@@ -86,3 +86,10 @@ def test_dp_infeasible():
     # Test dp when no feasible configuration exists.
     # For a grid of size 1x1, there are no neighbors, so total domination is impossible.
     assert total_domination_dp(1, 1) is None
+
+
+def test_cpsat_0_n():
+    assert total_domination_cpsat(4, 0) == 0
+    assert total_domination_cpsat(4, -1) == 0
+    assert total_domination_cpsat(0, 4) == 0
+    assert total_domination_cpsat(-1, 4) == 0
