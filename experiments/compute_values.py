@@ -5,14 +5,18 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.dp_4xn import total_domination_dp, formula_4xn
+from src.dp_4xn import (
+    total_domination_dp,
+    formula_4xn,
+)  # pylint: disable=wrong-import-position
 
 OUT = os.path.join("data", "values_4xn.csv")
 
 
 def main():
+    """Compute and save the total domination numbers to CSV."""
     os.makedirs("data", exist_ok=True)
-    with open(OUT, "w", newline="") as f:
+    with open(OUT, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["n", "gamma_t_4xn", "formula"])
         for n in range(1, 101):

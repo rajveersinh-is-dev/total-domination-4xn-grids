@@ -3,10 +3,9 @@
 # mypy: disable-error-code="attr-defined"
 
 
-from ortools.sat.python import cp_model
-
-
 from typing import Optional
+
+from ortools.sat.python import cp_model
 
 
 def total_domination_cpsat(m: int, n: int, time_limit: float = 300.0) -> Optional[int]:
