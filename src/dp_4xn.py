@@ -22,23 +22,23 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
     if m <= 0 or n <= 0:
         return 0
 
-    M = 1 << m
-    full = M - 1
-    INF = 10**9
+    m_states = 1 << m
+    full = m_states - 1
+    infinity = 10**9
 
     if m not in _dp_states_cache:
-        bc = [q.bit_count() for q in range(M)]
+        bc = [q.bit_count() for q in range(m_states)]
         dp = {}
-        for s in range(M):
+        for s in range(m_states):
             dp[(0, s)] = bc[s]
         _dp_states_cache[m] = [dp]
 
-        vn = [vertical_neighbors(c, m) for c in range(M)]
+        vn = [vertical_neighbors(c, m) for c in range(m_states)]
         transitions = {}
-        for p in range(M):
-            for c in range(M):
+        for p in range(m_states):
+            for c in range(m_states):
                 d_cur = vn[c] | p
-                valid_qs = [q for q in range(M) if (d_cur | q) == full]
+                valid_qs = [q for q in range(m_states) if (d_cur | q) == full]
                 if valid_qs:
                     transitions[(p, c)] = valid_qs
         _dp_transitions_cache[m] = transitions
@@ -47,7 +47,7 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
     transitions = _dp_transitions_cache[m]
 
     if len(states) < n:
-        bc = [q.bit_count() for q in range(M)]
+        bc = [q.bit_count() for q in range(m_states)]
         for _ in range(len(states), n):
             dp = states[-1]
             newdp: dict[tuple[int, int], int] = {}
@@ -63,13 +63,13 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
 
     dp = states[n - 1]
 
-    best = INF
-    vn = [vertical_neighbors(c, m) for c in range(M)]
+    best = infinity
+    vn = [vertical_neighbors(c, m) for c in range(m_states)]
     for (p, c), cost in dp.items():
         d_last = vn[c] | p
         if d_last == full and cost < best:
             best = cost
-    return None if best == INF else best
+    return None if best == infinity else best
 
 
 def formula_4xn(n: int) -> int:
@@ -80,8 +80,8 @@ def formula_4xn(n: int) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     bad = []
-    for n in range(4, 501):
-        value = total_domination_dp(4, n)
-        if value != formula_4xn(n):
-            bad.append((n, value, formula_4xn(n)))
+    for _n in range(4, 501):
+        _value = total_domination_dp(4, _n)
+        if _value != formula_4xn(_n):
+            bad.append((_n, _value, formula_4xn(_n)))
     print("checked n=4..500; discrepancies:", bad)

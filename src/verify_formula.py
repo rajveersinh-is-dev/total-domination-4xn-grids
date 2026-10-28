@@ -9,7 +9,8 @@ def verify_4xn(limit: int = 500) -> list[tuple[int, int, int]]:
     discrepancies = []
     for n in range(4, limit + 1):
         value = total_domination_dp(4, n)
-        assert value is not None
+        if value is None:
+            raise ValueError(f"Total domination DP returned None for 4x{n}")
         expected = formula_4xn(n)
         if value != expected:
             discrepancies.append((n, value, expected))
