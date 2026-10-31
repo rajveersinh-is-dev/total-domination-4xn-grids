@@ -93,3 +93,10 @@ def test_cpsat_0_n():
     assert total_domination_cpsat(4, -1) == 0
     assert total_domination_cpsat(0, 4) == 0
     assert total_domination_cpsat(-1, 4) == 0
+
+
+def test_dp_vs_cpsat_other_m():
+    """Verify DP matches CP-SAT for grids with m != 4."""
+    for m in [2, 3, 5]:
+        for n in range(1, 6):
+            assert total_domination_dp(m, n) == total_domination_cpsat(m, n)
