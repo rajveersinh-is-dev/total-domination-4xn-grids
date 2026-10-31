@@ -15,3 +15,14 @@ def test_verify_4xn_discrepancy(monkeypatch):
 
     bad = verify_4xn(5)
     assert len(bad) > 0
+
+
+def test_verify_4xn_value_none(monkeypatch):
+    import pytest
+    import src.verify_formula
+
+    # Mock to return None and trigger ValueError
+    monkeypatch.setattr(src.verify_formula, "total_domination_dp", lambda m, n: None)
+
+    with pytest.raises(ValueError, match="Total domination DP returned None for 4x4"):
+        src.verify_formula.verify_4xn(5)

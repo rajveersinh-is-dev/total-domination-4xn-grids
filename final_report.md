@@ -95,3 +95,28 @@ VERIFIED IMPROVEMENT
 | ---------------- | -------------- | --------------------------- | ------------------------- |
 | `pytest tests/test_experiments.py` | PASS | `1 passed in 0.14s` | Ensures experiments logic runs safely in isolation. |
 | `pytest --cov=experiments` | PASS | `100% (or very near) coverage on compute_values.py` | Verified experiment logic is traversed. |
+
+
+## Iteration 4 Additions
+
+### B. Improvements implemented
+
+1. **Extended test coverage for different grid dimensions**
+   - **Problem discovered:** The existing test suite was verifying agreement between DP and CP-SAT mostly for 4xN grids, but the DP algorithm was written generally for any $m \le 5$. There were no specific cross-checks for dimensions $m \neq 4$.
+   - **Root cause:** The test suite was too narrow focused strictly on the final result for $m=4$, potentially missing logic bugs in DP for other row sizes.
+   - **Solution implemented:** Added `test_dp_vs_cpsat_other_m` to dynamically verify $m \in \{2, 3, 5\}$ for $n \in [1, 5]$. This ensures DP correctly implements the full theoretical problem space even outside the specific $4 \times n$ claim.
+   - **Files affected:** `tests/test_td.py`
+   - **Expected and demonstrated benefit:** Proves robustness of the dynamic programming algorithm. Found 0 deviations.
+
+2. **Extended test coverage for ValueError logic**
+   - **Problem discovered:** The fallback `ValueError` trigger in `src/verify_formula.py` logic was completely untested. We had 100% line coverage for the rest, but missed covering exactly how verification behaves if a totally infeasible value is somehow generated for a $4 \times n$ configuration.
+   - **Root cause:** Missing negative mock test.
+   - **Solution implemented:** Added `test_verify_4xn_value_none` mocking the DP response to `None`, verifying the application correctly traps and raises the `ValueError`.
+   - **Files affected:** `tests/test_verify.py`
+   - **Expected and demonstrated benefit:** Achieves true 100% unit coverage for `src/verify_formula.py` while ensuring failure states correctly halt execution.
+
+### C. Verification results
+
+| Check or command | Actual outcome | Relevant output or evidence | Explanation of limitation |
+| ---------------- | -------------- | --------------------------- | ------------------------- |
+| `pytest --cov=src` | PASS | `100% on all files (95/95 stmts)` | Full coverage achieved. |
