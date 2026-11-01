@@ -17,7 +17,7 @@ def main():
     """Compute and save the total domination numbers to CSV."""
     os.makedirs("data", exist_ok=True)
     with open(OUT, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["n", "gamma_t_4xn", "formula"])
         for n in range(1, 101):
             value = total_domination_dp(4, n)
