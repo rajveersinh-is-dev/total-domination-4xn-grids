@@ -120,3 +120,28 @@ VERIFIED IMPROVEMENT
 | Check or command | Actual outcome | Relevant output or evidence | Explanation of limitation |
 | ---------------- | -------------- | --------------------------- | ------------------------- |
 | `pytest --cov=src` | PASS | `100% on all files (95/95 stmts)` | Full coverage achieved. |
+
+## Iteration 5 Additions
+
+### B. Improvements implemented
+
+1. **Deterministic CSV Line Endings**
+   - **Problem discovered:** The `experiments/compute_values.py` script generated `data/values_4xn.csv` with platform-dependent line endings (e.g. CRLF on some systems) which led to mismatched diffs against the committed file despite no data changing.
+   - **Root cause:** Python `csv.writer` defaults to `\r\n` line terminator if unspecified, even when `newline=''` is passed to `open()`.
+   - **Solution implemented:** Added `lineterminator='\n'` to the `csv.writer` to ensure predictable and cross-platform stable Unix line endings.
+   - **Files affected:** `experiments/compute_values.py`
+   - **Expected and demonstrated benefit:** Regenerating data no longer produces unintended git diffs based on OS environments, ensuring clean reproducibility.
+
+2. **Mypy module resolution in CI**
+   - **Problem discovered:** Using simply `mypy .` in CI or locally can cause module resolution errors if multiple roots (like `src/`, `tests/`, and `experiments/`) are present without top-level package modules.
+   - **Root cause:** Mypy attempts to map files to modules, which fails when duplicate module names exist across directories (e.g. `compute_values.py`).
+   - **Solution implemented:** Changed the MyPy CI command to `mypy --explicit-package-bases src/ tests/ experiments/` to map directories correctly without conflict.
+   - **Files affected:** `.github/workflows/ci.yml`
+   - **Expected and demonstrated benefit:** Linting pipeline is significantly more robust and accurately parses all scripts without module name clashes.
+
+### C. Verification results
+
+| Check or command | Actual outcome | Relevant output or evidence | Explanation of limitation |
+| ---------------- | -------------- | --------------------------- | ------------------------- |
+| `python experiments/compute_values.py; git diff data/values_4xn.csv` | PASS | `wrote data/values_4xn.csv` and empty diff | Confirms line endings are fixed and match committed data. |
+| `mypy --explicit-package-bases src/ tests/ experiments/` | PASS | `Success: no issues found in 8 source files` | Confirms all types check cleanly without module conflict. |
