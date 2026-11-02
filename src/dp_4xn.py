@@ -13,8 +13,8 @@ def vertical_neighbors(mask: int, m: int) -> int:
     return ((mask << 1) & ((1 << m) - 1)) | (mask >> 1)
 
 
-_dp_states_cache: dict[int, list[dict[tuple[int, int], int]]] = {}
-_dp_transitions_cache: dict[int, dict[tuple[int, int], list[int]]] = {}
+_dp_states_cache: dict[int, list[list[int]]] = {}
+_dp_transitions_cache: dict[int, list[list[int]]] = {}
 
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
@@ -28,19 +28,18 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
 
     if m not in _dp_states_cache:
         bc = [q.bit_count() for q in range(m_states)]
-        dp = {}
+        dp = [infinity] * (m_states * m_states)
         for s in range(m_states):
-            dp[(0, s)] = bc[s]
+            dp[s] = bc[s]
         _dp_states_cache[m] = [dp]
 
         vn = [vertical_neighbors(c, m) for c in range(m_states)]
-        transitions = {}
+        transitions: list[list[int]] = [[] for _ in range(m_states * m_states)]
         for p in range(m_states):
             for c in range(m_states):
                 d_cur = vn[c] | p
                 valid_qs = [q for q in range(m_states) if (d_cur | q) == full]
-                if valid_qs:
-                    transitions[(p, c)] = valid_qs
+                transitions[p * m_states + c] = valid_qs
         _dp_transitions_cache[m] = transitions
 
     states = _dp_states_cache[m]
@@ -50,25 +49,31 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
         bc = [q.bit_count() for q in range(m_states)]
         for _ in range(len(states), n):
             dp = states[-1]
-            newdp: dict[tuple[int, int], int] = {}
-            for (p, c), cost in dp.items():
-                qs = transitions.get((p, c))
-                if qs is not None:
-                    for q in qs:
+            newdp = [infinity] * (m_states * m_states)
+            for pc in range(m_states * m_states):
+                cost = dp[pc]
+                if cost != infinity:
+                    c = pc % m_states
+                    c_m = c * m_states
+                    for q in transitions[pc]:
                         ncost = cost + bc[q]
-                        key = (c, q)
-                        if key not in newdp or ncost < newdp[key]:
-                            newdp[key] = ncost
+                        idx = c_m + q
+                        if ncost < newdp[idx]:
+                            newdp[idx] = ncost
             states.append(newdp)
 
     dp = states[n - 1]
 
     best = infinity
     vn = [vertical_neighbors(c, m) for c in range(m_states)]
-    for (p, c), cost in dp.items():
-        d_last = vn[c] | p
-        if d_last == full and cost < best:
-            best = cost
+    for pc in range(m_states * m_states):
+        cost = dp[pc]
+        if cost != infinity:
+            p = pc // m_states
+            c = pc % m_states
+            d_last = vn[c] | p
+            if d_last == full and cost < best:
+                best = cost
     return None if best == infinity else best
 
 
