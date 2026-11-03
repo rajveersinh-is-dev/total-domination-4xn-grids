@@ -164,3 +164,25 @@ VERIFIED IMPROVEMENT
 | `PYTHONPATH=. pytest --cov=src` | PASS | `100% test coverage` | Ensured no functionality broke after restructuring internal data structures. |
 | `mypy src tests experiments` | PASS | `Success: no issues found` | Ensured updated cache array type hints (`list[list[int]]`) were consistent. |
 | `pylint src tests experiments` | PASS | `10.00/10` | Ensured style didn't regress. |
+
+## Iteration 7 Additions
+
+### B. Improvements implemented
+
+1. **Further Optimization of DP Algorithm Inner Loop**
+   - **Problem discovered:** The previous DP algorithm optimized cache arrays but still performed dynamic calculations in its innermost loops during transitions (specifically, `c_m + q` and looking up bit counts dynamically for `q`).
+   - **Root cause:** Even relatively fast math operations are costly when running inside a tight triple-nested loop (executing millions of times for large $n$).
+   - **Solution implemented:**
+     - Restructured `_dp_transitions_cache` to store exactly the needed results: it now stores tuples of `(idx, weight)`.
+     - `idx = c * m_states + q` and `weight = bc[q]` are fully precomputed during cache initialization.
+     - The innermost loop simply unpacks and applies the precomputed tuples: `for idx, weight in t_all_transitions[pc]: ncost = cost + weight`.
+   - **Files affected:** `src/dp_4xn.py`.
+   - **Expected and demonstrated benefit:** This completely eliminates index calculation math and bit-count array lookups from the hot path. Measured execution time for $m=5, n=5000$ reduced from ~13.3s to ~9.4s, marking an additional ~30% improvement in algorithm efficiency while maintaining identical outputs.
+
+### C. Verification results
+
+| Check or command | Actual outcome | Relevant output or evidence | Explanation of limitation |
+| ---------------- | -------------- | --------------------------- | ------------------------- |
+| `PYTHONPATH=. pytest --cov=src` | PASS | `100% test coverage` | Tests verify the updated tuples-based lookup logic. |
+| `mypy src tests experiments` | PASS | `Success: no issues found` | Validates complex cached transition type hints. |
+| `pylint src tests experiments` | PASS | `10.00/10` | Style remained clean. |

@@ -14,7 +14,7 @@ def vertical_neighbors(mask: int, m: int) -> int:
 
 
 _dp_states_cache: dict[int, list[list[int]]] = {}
-_dp_transitions_cache: dict[int, list[list[int]]] = {}
+_dp_transitions_cache: dict[int, tuple[tuple[tuple[int, int], ...], ...]] = {}
 
 
 def total_domination_dp(m: int, n: int) -> Optional[int]:
@@ -34,30 +34,32 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
         _dp_states_cache[m] = [dp]
 
         vn = [vertical_neighbors(c, m) for c in range(m_states)]
-        transitions: list[list[int]] = [[] for _ in range(m_states * m_states)]
-        for p in range(m_states):
-            for c in range(m_states):
-                d_cur = vn[c] | p
-                valid_qs = [q for q in range(m_states) if (d_cur | q) == full]
-                transitions[p * m_states + c] = valid_qs
-        _dp_transitions_cache[m] = transitions
+
+        t_all = []
+        for pc in range(m_states * m_states):
+            p = pc // m_states
+            c = pc % m_states
+            d_cur = vn[c] | p
+            valid = []
+            for q in range(m_states):
+                if (d_cur | q) == full:
+                    valid.append((c * m_states + q, bc[q]))
+            t_all.append(tuple(valid))
+
+        _dp_transitions_cache[m] = tuple(t_all)
 
     states = _dp_states_cache[m]
-    transitions = _dp_transitions_cache[m]
+    t_all_transitions = _dp_transitions_cache[m]
 
     if len(states) < n:
-        bc = [q.bit_count() for q in range(m_states)]
         for _ in range(len(states), n):
             dp = states[-1]
             newdp = [infinity] * (m_states * m_states)
             for pc in range(m_states * m_states):
                 cost = dp[pc]
                 if cost != infinity:
-                    c = pc % m_states
-                    c_m = c * m_states
-                    for q in transitions[pc]:
-                        ncost = cost + bc[q]
-                        idx = c_m + q
+                    for idx, weight in t_all_transitions[pc]:
+                        ncost = cost + weight
                         if ncost < newdp[idx]:
                             newdp[idx] = ncost
             states.append(newdp)
