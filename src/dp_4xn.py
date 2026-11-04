@@ -21,6 +21,8 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
     """Minimum size of a total dominating set of P_m x P_n via column DP."""
     if m <= 0 or n <= 0:
         return 0
+    if m > n:
+        m, n = n, m
 
     m_states = 1 << m
     full = m_states - 1
@@ -41,9 +43,14 @@ def total_domination_dp(m: int, n: int) -> Optional[int]:
             c = pc % m_states
             d_cur = vn[c] | p
             valid = []
-            for q in range(m_states):
-                if (d_cur | q) == full:
-                    valid.append((c * m_states + q, bc[q]))
+            req = full ^ d_cur
+            sub = d_cur
+            while True:
+                q = req | sub
+                valid.append((c * m_states + q, bc[q]))
+                if not sub:
+                    break
+                sub = (sub - 1) & d_cur
             t_all.append(tuple(valid))
 
         _dp_transitions_cache[m] = tuple(t_all)
