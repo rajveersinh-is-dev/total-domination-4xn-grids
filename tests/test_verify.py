@@ -1,12 +1,14 @@
+import pytest
+
 from src.verify_formula import verify_4xn
 
 
-def test_verify_4xn():
+def test_verify_4xn() -> None:
     bad = verify_4xn(10)
     assert not bad
 
 
-def test_verify_4xn_discrepancy(monkeypatch):
+def test_verify_4xn_discrepancy(monkeypatch: pytest.MonkeyPatch) -> None:
     import src.verify_formula
 
     # Mock total_domination_dp to always return 0,
@@ -17,8 +19,8 @@ def test_verify_4xn_discrepancy(monkeypatch):
     assert len(bad) > 0
 
 
-def test_verify_4xn_value_none(monkeypatch):
-    import pytest
+def test_verify_4xn_value_none(monkeypatch: pytest.MonkeyPatch) -> None:
+
     import src.verify_formula
 
     # Mock to return None and trigger ValueError

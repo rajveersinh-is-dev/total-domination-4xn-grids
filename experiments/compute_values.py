@@ -5,15 +5,13 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.dp_4xn import (
-    total_domination_dp,
-    formula_4xn,
-)  # pylint: disable=wrong-import-position
+from src.dp_4xn import formula_4xn  # pylint: disable=wrong-import-position
+from src.dp_4xn import total_domination_dp
 
 OUT = os.path.join("data", "values_4xn.csv")
 
 
-def main():
+def main() -> None:
     """Compute and save the total domination numbers to CSV."""
     os.makedirs("data", exist_ok=True)
     with open(OUT, "w", newline="", encoding="utf-8") as f:

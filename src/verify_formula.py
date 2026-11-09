@@ -1,7 +1,8 @@
 """Verification helpers for the 4 x n total domination formula."""
 
 import sys
-from src.dp_4xn import total_domination_dp, formula_4xn
+
+from src.dp_4xn import formula_4xn, total_domination_dp
 
 
 def verify_4xn(limit: int = 500) -> list[tuple[int, int, int]]:
