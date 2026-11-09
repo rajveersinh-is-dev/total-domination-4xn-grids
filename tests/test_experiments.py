@@ -1,7 +1,12 @@
 import os
+from typing import Any
+
+import pytest
 
 
-def test_compute_values_matches_committed(monkeypatch, tmp_path):
+def test_compute_values_matches_committed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
     import experiments.compute_values
 
     # Redirect OUT to a temporary file
@@ -11,7 +16,7 @@ def test_compute_values_matches_committed(monkeypatch, tmp_path):
     # Mock os.makedirs to not create "data" directory locally inside the temp path test
     original_makedirs = os.makedirs
 
-    def mock_makedirs(name, exist_ok=False):
+    def mock_makedirs(name: str, exist_ok: bool = False) -> None:
         if name == "data":
             return original_makedirs(temp_out.parent, exist_ok=exist_ok)
         return original_makedirs(name, exist_ok=exist_ok)
