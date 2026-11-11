@@ -56,6 +56,28 @@ def test_solve_td_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
         total_domination_cpsat(2, 2)
 
 
+def test_solve_td_feasible_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ortools.sat.python import cp_model
+
+    class MockSolver:
+        def __init__(self) -> None:
+            class DummyParameters:
+                max_time_in_seconds = 300.0
+                num_search_workers = 1
+
+            self.parameters = DummyParameters()
+
+        def Solve(self, model: Any) -> Any:
+            return cp_model.FEASIBLE
+
+    monkeypatch.setattr("src.solve_td.cp_model.CpSolver", MockSolver)
+
+    with pytest.raises(
+        RuntimeError, match="CP-SAT returned FEASIBLE \\(suboptimal\\)"
+    ):
+        total_domination_cpsat(2, 2)
+
+
 def test_solve_td_model_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
     from ortools.sat.python import cp_model
 
