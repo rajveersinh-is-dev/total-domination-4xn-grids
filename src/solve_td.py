@@ -48,7 +48,9 @@ def total_domination_cpsat(m: int, n: int, time_limit: float = 300.0) -> Optiona
     status = solver.Solve(model)
     if status == cp_model.INFEASIBLE:
         return None
-    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+    if status == cp_model.FEASIBLE:
+        raise RuntimeError(f"CP-SAT returned FEASIBLE (suboptimal) for {m}x{n}")
+    if status != cp_model.OPTIMAL:
         if status == cp_model.UNKNOWN:
             raise RuntimeError(f"CP-SAT timeout or unknown for {m}x{n}")
         raise RuntimeError(f"CP-SAT failed for {m}x{n}: {status}")
